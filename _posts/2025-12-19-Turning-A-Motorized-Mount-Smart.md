@@ -59,7 +59,7 @@ RadioLib is a powerful library meant for ESP32 and Arduinos, but as it turns out
 Using RadioLib, I decided to make my project as follows: 
 
 -A function that captures raw signals for 5 seconds
-```
+```cpp
 void captureRaw(uint32_t captureMs) {
 int16_t st = radio.receiveDirectAsync();
 if(st != RADIOLIB_ERR_NONE) {
@@ -89,7 +89,7 @@ capTimings[capCount++] = lastLevelHigh ? (int32_t)dt : -(int32_t)dt;
 ```
 - Press the button on my remote
 - Print via serial the array of edges to copy and transmit
-```
+```cpp
 void printCapturedAsArray() {
 noInterrupts();
 uint16_t n = capCount;
@@ -117,7 +117,7 @@ Serial.println();
 
 - We can then paste the array into a variable, and attempt to send them via a transmit function
 
-```
+```cpp
 const int32_t RAW[] = {
 
 687434, -1513, 347, -751, 708, -359, 342, -771,
@@ -129,7 +129,7 @@ const int32_t RAW[] = {
 const size_t RAW_LEN = sizeof(RAW)/sizeof(RAW[0]);
 ```
 
-```
+```cpp
 void transmitRawTimings(const int32_t* raw, size_t rawLen, uint8_t repeats, uint32_t gapUs) {
 if(raw == nullptr || rawLen == 0) {
 Serial.println(F("transmitRawTimings: empty RAW"));
