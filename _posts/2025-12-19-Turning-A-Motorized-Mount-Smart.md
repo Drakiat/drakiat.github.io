@@ -19,7 +19,7 @@ Bit: 40
 Key: 00 00 00 53 82 00 01 33
 
 ```
-In terms of tools, I went with the Raspberry Pi Pico 2W processing, and a CC1101 433mhz module. I also found [this](https://www.printables.com/model/537529-raspberry-pi-pico-rp2040-cc1101-tool-chassis/related) cool case which I 3D printed for my devices.
+In terms of tools, I went with the Raspberry Pi Pico 2W microcontroller, and a CC1101 433mhz module. I also found [this](https://www.printables.com/model/537529-raspberry-pi-pico-rp2040-cc1101-tool-chassis/related) cool case which I 3D printed for my devices.
 
 <p><img src="/images/case.png" alt="3D-printed case" /></p>
 <br>
