@@ -26,7 +26,7 @@ In terms of tools, I went with the Raspberry Pi Pico 2W processing, and a CC1101
 
 I used the following wiring in my setup.
 
-
+```
 | CC1101 | Raspberry Pi Pico |
 | ------ | ----------------- |
 | GND    | GND               |
@@ -37,6 +37,7 @@ I used the following wiring in my setup.
 | MOSI   | GP19              |
 | MISO   | GP16              |
 | GPO2   | Unused            |
+```
 <p><img src="/images/wiring.png" alt="Wiring photo" /></p>
 <br>
 Please note that your CC1101 may have different pinout than mine.
@@ -109,6 +110,7 @@ Serial.println();
 ```
 
 - We can then paste the array into a variable, and attempt to send them via a transmit function
+
 ```
 const int32_t RAW[] = {
 
