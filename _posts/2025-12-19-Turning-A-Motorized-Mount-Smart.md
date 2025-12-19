@@ -195,7 +195,7 @@ THEN = Adafruit -> "Send Data to a Feed"
 
 ## Connecting the Pico
 
-Once it is all setup, you need to connect you Pico to Wi-Fi and Adafruit. I used the <WiFi.h> built-in, as well as <PubSubClient.h> by Nick O'Leary, in order to talk to Adafruit using the MQTT protocol.
+Once it is all setup, you need to connect you Pico to Wi-Fi and Adafruit. In order to talk to Adafruit using the MQTT protocol, I used built-in libraries, as well as PubSubClient.h by Nick O'Leary, which was easily installable through the Arduino "Manage Libraries" interface.
 
 ## Code
 
