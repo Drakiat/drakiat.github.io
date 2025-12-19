@@ -48,11 +48,11 @@ Please note that your CC1101 may have different pinout than mine.
 
 After much trial and error with CircuitPython and MicroPython to replay the signal, I was not able to get the ASK/OOK signals from the Dooya remote to trigger the device, I mostly used resources from [this repo](https://github.com/unixb0y/CPY-CC1101) which let met transmit strings, but I did not find a way to replay my remote's signal.
 
-This article seemed promising [here](https://www.elektroda.com/news/news4157129.html), in which they used an ESP32 with ESPHome in order to capture and replay the Dooya signals. However, I did not want to install Home Assistant on my setup. It was nonetheless interesting to see the libraries they were using, in particular **RadioLib**.
+[This article](https://www.elektroda.com/news/news4157129.html) seemed promising, in which they used an ESP32 with ESPHome in order to capture and replay the Dooya signals. However, I did not want to install Home Assistant on my setup. It was nonetheless interesting to see the libraries they were using, in particular **RadioLib**.
 
 RadioLib is a powerful library meant for ESP32 and Arduinos, but as it turns out is also compatible with Raspberry Pi Picos!
 
-This discussion on the repo was very helpful in getting the initial setup with it. I was able to use these snippet of code to transmit signals, and then see them on my Flipper. [here](https://github.com/jgromes/RadioLib/discussions/842)
+[This discussion on the RadioLib repo](https://github.com/jgromes/RadioLib/discussions/842) was very helpful in getting the initial setup with it. I was able to use these snippet of code to transmit signals, and then see them on my Flipper. 
 
 ## Implementation
 
