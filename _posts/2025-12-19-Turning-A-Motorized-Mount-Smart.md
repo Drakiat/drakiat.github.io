@@ -19,7 +19,7 @@ Bit: 40
 Key: 00 00 00 53 82 00 01 33
 
 ```
-In terms of tools, I went with the Raspberry Pi Pico 2W processing, and a CC1101 433mhz module. I also found this cool case which I 3D printed for my devices.
+In terms of tools, I went with the Raspberry Pi Pico 2W processing, and a CC1101 433mhz module. I also found [this](https://www.printables.com/model/537529-raspberry-pi-pico-rp2040-cc1101-tool-chassis/related) cool case which I 3D printed for my devices.
 
 <p><img src="/images/case.png" alt="3D-printed case" /></p>
 <br>
@@ -59,6 +59,10 @@ This discussion on the repo was very helpful in getting the initial setup with i
 Using RadioLib, I decided to make my project as follows: 
 
 -A function that captures raw signals for 5 seconds
+
+<details>
+<summary>captureRaw Function</summary>
+
 ```
 void captureRaw(uint32_t captureMs) {
 int16_t st = radio.receiveDirectAsync();
@@ -87,8 +91,15 @@ capTimings[capCount++] = lastLevelHigh ? (int32_t)dt : -(int32_t)dt;
 }
 }
 ```
+
+</details>
+
 - Press the button on my remote
 - Print via serial the array of edges to copy and transmit
+
+<details>
+<summary>printCapturedAsArray Function</summary>
+
 ```
 void printCapturedAsArray() {
 noInterrupts();
@@ -115,7 +126,12 @@ Serial.println();
 }
 ```
 
+</details>
+
 - We can then paste the array into a variable, and attempt to send them via a transmit function
+
+<details>
+<summary>Example RAW Array</summary>
 
 ```
 const int32_t RAW[] = {
@@ -128,6 +144,11 @@ const int32_t RAW[] = {
 
 const size_t RAW_LEN = sizeof(RAW)/sizeof(RAW[0]);
 ```
+
+</details>
+
+<details>
+<summary>transmitRawTimings Function</summary>
 
 ```
 void transmitRawTimings(const int32_t* raw, size_t rawLen, uint8_t repeats, uint32_t gapUs) {
@@ -172,6 +193,9 @@ yield();
 }
 }
 ```
+
+</details>
+
 Using these functions, I was able to get my mount to move up and down programmatically. Sweet!
 
 ## Integration with Home Automation
