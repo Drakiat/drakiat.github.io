@@ -199,7 +199,7 @@ Once it is all setup, you need to connect you Pico to Wi-Fi and Adafruit. I used
 
 ## Code
 
-The full .ino code is published in my Repo and should be easily modifiable for other use cases
+The full .ino code is published [here](https://github.com/Drakiat/c1101-dooya/tree/main) and should be easily modifiable for other use cases.
 
 <p><img src="/images/signal.gif" alt="Signal replay GIF" /></p>
 <br>
