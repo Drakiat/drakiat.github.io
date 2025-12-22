@@ -3,11 +3,11 @@ title: "Turning a motorized mount smart with a Raspberry Pi Pico and CC1101 modu
 author: "Felipe Tapia Sasot"
 date: 2025-12-19
 categories: Cybersecurity
-tags: Dooya,CC1101,Arduina,RF
+tags: Dooya,CC1101,Arduino,RF
 ---
-I recently purchased a motorized mount for my TV to sit above the fireplace (I know, r/TVTooHigh ...). This motorized mount comes with a remote with an UP, DOWN and STOP commands. As part of my home automation setup, I use a Google Home to connect to most of my device, hence I had to find a way to integrate this mount into my setup.
+I recently bought a motorized mount for my TV to sit above the fireplace (yeah, I know, r/TVTooHigh...) . It came with a simple remote for UP, DOWN, and STOP commands, but since I rely on Google Home for most of my home automation, I wanted to integrate this mount into my smart setup.
 
-By opening the remote battery casing and looking at the FCC-ID, I found out that the signal transmits on the 433.92mHz frequency. I used my Flipper Zero to capture and examine the signal, which decoded it with no issues. It turns out the signal is using the Dooya protocol, which is used for blind shutters, and other home appliances.
+My first step was to crack open the remote's battery casing and check the FCC-ID, which revealed it transmits on 433.92 MHz. Grabbing my Flipper Zero, I captured and decoded the signal with no issues. It turned out to use the Dooya protocol, commonly found in blind shutters and other home appliances.
 
 ```
 Filetype: Flipper SubGhz Key File
@@ -19,7 +19,7 @@ Bit: 40
 Key: 00 00 00 53 82 00 01 33
 
 ```
-In terms of tools, I went with the Raspberry Pi Pico 2W microcontroller, and a CC1101 433mhz module. I also found [this](https://www.printables.com/model/537529-raspberry-pi-pico-rp2040-cc1101-tool-chassis/related) cool case which I 3D printed for my devices.
+For the hardware, I chose a Raspberry Pi Pico 2W microcontroller paired with a CC1101 433 MHz module. I also 3D-printed [a cool case](https://www.printables.com/model/537529-raspberry-pi-pico-rp2040-cc1101-tool-chassis) to house everything neatly.
 
 <p><img src="/images/case.png" alt="3D-printed case" /></p>
 <br>
@@ -42,23 +42,17 @@ I used the following wiring in my setup.
 ```
 <p><img src="/images/wiring.png" alt="Wiring photo" /></p>
 <br>
-Please note that your CC1101 may have different pinout than mine.
+Wiring it up was straightforward, though I should note that other CC1101 might have a different pinout than mine since there are multiple versions of the circuit.
 
 ## Signal Capture and Replay
 
-After much trial and error with CircuitPython and MicroPython to replay the signal, I was not able to get the ASK/OOK signals from the Dooya remote to trigger the device, I mostly used resources from [this repo](https://github.com/unixb0y/CPY-CC1101) which let met transmit strings, but I did not find a way to replay my remote's signal.
+The real challenge began with signal replay. I spent hours tinkering with CircuitPython and MicroPython, trying to mimic the ASK/OOK signals from the Dooya remote, but nothing worked. I drew from resources in [this repo](https://github.com/unixb0y/CPY-CC1101), which helped with transmitting strings and confirm that the module was working fine, but replaying the exact remote signal eluded me.
 
-[This article](https://www.elektroda.com/news/news4157129.html) seemed promising, in which they used an ESP32 with ESPHome in order to capture and replay the Dooya signals. However, I did not want to install Home Assistant on my setup. It was nonetheless interesting to see the libraries they were using, in particular **RadioLib**.
+I stumbled upon [this article](https://www.elektroda.com/news/news4157129.html), where they used an ESP32 with ESPHome to capture and replay Dooya signals. However, I did not want to install Home Assistant on my setup. Still, it introduced me to **RadioLib**, a versatile library for ESP32 and Arduino boards.
 
-RadioLib is a powerful library meant for ESP32 and Arduinos, but as it turns out is also compatible with Raspberry Pi Picos!
+To my surprise, RadioLib also works with Raspberry Pi Picos! [This discussion on the RadioLib repo](https://github.com/jgromes/RadioLib/discussions/842) was very useful for getting started. With some code snippets, I could transmit signals and verify them on my Flipper. 
 
-[This discussion on the RadioLib repo](https://github.com/jgromes/RadioLib/discussions/842) was very helpful in getting the initial setup with it. I was able to use these snippet of code to transmit signals, and then see them on my Flipper. 
-
-## Implementation
-
-Using RadioLib, I decided to make my project as follows: 
-
--A function that captures raw signals for 5 seconds
+Building on that, I created a function to capture raw signals over 5 seconds. I'd press a button on the remote, and the code would print an array of edges via serial for copying and transmitting.
 ```cpp
 void captureRaw(uint32_t captureMs) {
 int16_t st = radio.receiveDirectAsync();
@@ -87,8 +81,7 @@ capTimings[capCount++] = lastLevelHigh ? (int32_t)dt : -(int32_t)dt;
 }
 }
 ```
-- Press the button on my remote
-- Print via serial the array of edges to copy and transmit
+Pasting that array into a variable, I could then transmit it using a dedicated function.
 ```cpp
 void printCapturedAsArray() {
 noInterrupts();
@@ -115,7 +108,6 @@ Serial.println();
 }
 ```
 
-- We can then paste the array into a variable, and attempt to send them via a transmit function
 
 ```cpp
 const int32_t RAW[] = {
@@ -172,34 +164,24 @@ yield();
 }
 }
 ```
-Using these functions, I was able to get my mount to move up and down programmatically. Sweet!
+Using these functions, I was able to get my mount to move up and down programmatically. Nice!
 
-## Integration with Home Automation
+Now, to tie it into my home automation, I needed to connect the Pico to Wi-Fi and link it to Google Home. I turned to two free services: IFTTT and Adafruit IO.
 
-Next I needed to connect the microcontroller to my Wi-Fi Network, and link it to my Google Home. I used two free online services for that: IFTTT and Adafruit IO.
-
-## Adafruit IO Setup
-
-After creating a free account on Adafruit, you can need to create a Feed and a Dashboard. In my dashboard I made a simple Toggle Switch with UP/DOWN values.
+Setting up Adafruit IO was simple—after a free account, I created a feed and dashboard with a toggle switch for UP/DOWN commands.
 
 <p><img src="/images/adafruit.png" alt="Adafruit dashboard" /></p>
 <br>
 
-## IFTTT Setup
-
-On IFTTT, you need to link both your Google Assistant and your Adafruit Account. You can then set up a new Applet where 
-IF = Google Assistant -> "Activate Scene" 
-THEN = Adafruit -> "Send Data to a Feed"
+For IFTTT, I linked my Google Assistant and Adafruit accounts, then crafted an applet: when I say "Activate Scene" to Google, it sends data to my Adafruit feed.
 <p><img src="/images/ifttt.png" alt="IFTTT setup" /></p>
 <br>
 
 ## Connecting the Pico
 
-Once it is all setup, you need to connect you Pico to Wi-Fi and Adafruit. In order to talk to Adafruit using the MQTT protocol, I used built-in libraries, as well as PubSubClient.h by Nick O'Leary, which was easily installable through the Arduino "Manage Libraries" interface.
+With everything configured, I connected the Pico to Wi-Fi using the built-in WiFi.h and PubSubClient.h by Nick O'Leary for MQTT communication with Adafruit.
 
-## Code
-
-The full .ino code is published [here](https://github.com/Drakiat/c1101-dooya/tree/main) and should be easily modifiable for other use cases.
+The complete .ino code is available in [my repo](https://github.com/Drakiat/c1101-dooya), ready for adaptation to other projects.
 
 <p><img src="/images/signal.gif" alt="Signal replay GIF" /></p>
 <br>
